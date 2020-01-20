@@ -3,9 +3,13 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
     mode: 'development',
-    entry: './src/app.js',
+
+    entry: {
+        client: './src/entry-client.js',
+        server: './src/entry-server.js'
+    },
     output: {
-        filename: 'app.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'dist')
     },
     plugins: [
