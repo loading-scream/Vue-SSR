@@ -2,10 +2,10 @@
   "name": "ssr",
   "version": "1.0.0",
   "description": "study",
-  "main": "server.js",
   "private": true,
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,14 @@
     "express": "^4.17.1",
     "vue": "^2.6.11",
     "vue-server-renderer": "^2.6.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "babel-loader": "^8.0.6",
+    "vue-loader": "^15.8.3",
+    "vue-template-compiler": "^2.6.11",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   }
 }

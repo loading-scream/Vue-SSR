@@ -1,5 +1,6 @@
-const Vue = require('vue')
-
+// 通用 entry(universal entry)
+import Vue from 'vue'
+import App from './App.vue'
 module.exports = function createApp(context) {
     return new Vue({
         data: {
