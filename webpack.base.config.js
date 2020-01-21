@@ -4,12 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
     mode: 'development',
-    entry: {
-        client: './src/entry-client.js',
-        server: './src/entry-server.js'
-    },
     output: {
-        filename: '[name].js',
         path: path.resolve(__dirname, 'dist')
     },
     plugins: [
