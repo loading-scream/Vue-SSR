@@ -1,7 +1,7 @@
 export default function (id) {
     return new Promise((res, rej) => {
         setTimeout(() => {
-            res(id + 'somebody')
+            res({ id, title: id + 'somebody' })
         }, 1000);
     })
 }

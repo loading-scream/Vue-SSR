@@ -11,11 +11,10 @@ import testStore from "../factory/store/modules/test";
 export default {
   asyncData({ store, route }) {
     store.registerModule("test", testStore);
-    store.dispatch("test/inc");
-    store.dispatch("fetchItem", {
-      id: route.params.id || 123
-    });
-    return;
+    return Promise.all([
+      store.dispatch("test/inc"),
+      store.dispatch("fetchItem", { id: route.query.id || 123 })
+    ]);
   },
   // 重要信息：当多次访问路由时，
   // 避免在客户端重复注册模块。
@@ -24,7 +23,7 @@ export default {
   },
   computed: {
     item() {
-      return this.$store.state.items && this.$store.state.items[this.$route.params.id];
+      return this.$store.state.items[this.$route.query.id || "123"];
     },
     count() {
       return this.$store.state.test.count;
