@@ -4,7 +4,7 @@
   "description": "study",
   "private": true,
   "scripts": {
-    "start": "webpack --config webpack.server.config.js && nodemon server.js"
+    "start": "webpack --config webpack.client.config.js && webpack --config webpack.server.config.js && nodemon server.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,16 +1,19 @@
-// 导入APP工厂函数
 const { createBundleRenderer } = require('vue-server-renderer')
-const bundle = require('./dist/vue-ssr-server-bundle.json')
-const renderer = createBundleRenderer(bundle, {
+const serverBundle = require('./dist/vue-ssr-server-bundle.json')
+const clientManifest = require('./dist/vue-ssr-client-manifest.json')
+const template = require('fs').readFileSync('layout.html', 'utf-8')
+
+const renderer = createBundleRenderer(serverBundle, {
     runInNewContext: false,
-    // H5页面基本架构抽离到模板, utf-8格式读取模板, ssr识别坑位自动拼接好html
-    template: require('fs').readFileSync('layout.html', 'utf-8'),
+    template,
+    clientManifest
 })
 
-// 导入 web 服务器框架
-const server = require('express')()
+const express = require('express')
+const server = express()
 
 server.use(require('serve-favicon')(require('path').join(__dirname, 'src', 'favicon.ico')))
+server.use(express.static('./dist'))
 
 // 通配路由, 转交给 vue router 处理
 server.get("*", (req, res) => {
