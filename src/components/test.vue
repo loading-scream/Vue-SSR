@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>test123, route val:{{item && item.title}}</div>
-    <div>count: {{count}}</div>
+    <div class="test">count: {{count}}</div>
   </div>
 </template>
 
@@ -33,4 +33,8 @@ export default {
 </script>
 
 <style>
+.test {
+  color: red;
+  font-size: 14px;
+}
 </style>

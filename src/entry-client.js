@@ -68,7 +68,7 @@ Vue.mixin({
 
 // 组件重用场景也要更新 如现在的列表页
 Vue.mixin({
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     const { asyncData } = this.$options
     if (asyncData) {
       asyncData({
