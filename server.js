@@ -1,28 +1,25 @@
-const { staticConfig, getSsrRenderer } = require('./ssrRenderer')
-const express = require('express')
-const server = express()
+const { devStaticMid, getSsrRenderer } = require('./ssrRenderer')
+const app = new (require('koa'))()
 
-server.use(require('serve-favicon')(require('path').join(__dirname, 'src', 'favicon.ico')))
+app.use(require('koa-favicon')(__dirname + '/src/favicon.ico'))
+
 if (process.env.NODE_ENV === 'production') {
-    server.use(express.static('./dist'))
+    app.use(require('koa-static')('./dist'))
 } else {
-    server.get(...staticConfig)
+    app.use(devStaticMid)
 }
 
-server.get("*", async (req, res) => {
-    const context = req
+app.use(async ctx => {
     const renderer = await getSsrRenderer()
     try {
-        const html = await renderer.renderToString(context)
-        res.header('content-type', 'text/html')
-        res.end(html)
+        const html = await renderer.renderToString(ctx)
+        ctx.body = html
     } catch (error) {
-        res.status(error.code).json(error)
+        console.log(error)
     }
 })
-
-server.listen(4000, async () => {
+app.listen(4000, async () => {
     await getSsrRenderer()
-    require('open')('http://localhost:4000')
+    require('open')('http://127.0.0.1:4000')
     console.log('listen in port 4000');
 })

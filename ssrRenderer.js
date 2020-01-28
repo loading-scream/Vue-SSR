@@ -65,9 +65,12 @@ if (process.env.NODE_ENV === 'production') {
 
 }
 
-exports.staticConfig = [/^\/(0|main)\.js$/, (req, res) => {
-    res.end(clientBundle[req.path.match(/^\/(0|main)\.js$/)[1]])
-}]
+exports.devStaticMid = async (ctx, next) => {
+    if (/^\/(0|main)\.js$/.test(ctx.path)) {
+        ctx.body = clientBundle[ctx.path.match(/^\/(0|main)\.js$/)[1]]
+    }
+    else await next()
+}
 exports.getSsrRenderer = () => new Promise(res => {
     if (renderer) res(renderer);
     else resolve = res

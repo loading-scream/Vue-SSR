@@ -12,9 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
+    "koa": "^2.11.0",
+    "koa-favicon": "^2.0.1",
+    "koa-static": "^5.0.0",
     "open": "^7.0.0",
-    "serve-favicon": "^2.5.0",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vue-server-renderer": "^2.6.11",
