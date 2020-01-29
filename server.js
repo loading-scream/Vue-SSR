@@ -20,6 +20,5 @@ app.use(async ctx => {
 })
 app.listen(4000, async () => {
     await getSsrRenderer()
-    require('open')('http://127.0.0.1:4000')
     console.log('listen in port 4000');
 })

@@ -1,7 +1,6 @@
 const { createBundleRenderer } = require('vue-server-renderer')
 const template = require('fs').readFileSync('layout.html', 'utf-8')
-let renderer = null, resolve = null, clientBundle = {}, serverBundle = ''
-// var hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
+let renderer = null, resolve = null, Bundles = {}, reg = /.*/
 
 if (process.env.NODE_ENV === 'production') {
     const serverBundle = require('./dist/vue-ssr-server-bundle.json')
@@ -16,58 +15,63 @@ if (process.env.NODE_ENV === 'production') {
     const serverConfig = require('./webpack.server.config.js')
     const clientConfig = require('./webpack.client.config.js')
     const mfs = new (require('memory-fs'))()
-    const update = () => {
-        if (Object.keys(clientBundle).every(key => clientBundle[key]) && serverBundle) {
-            console.log(`i ｢wdm｣: Compiled successfully.`);
-            renderer = createBundleRenderer(serverBundle, {
+    const readFile = () => {
+        try {
+            const fileList = mfs.readdirSync(__dirname + '/dist');
+            fileList.forEach(file => {
+                Bundles[file.replace(/\.\w+$/, "")] = mfs.readFileSync(__dirname + '/dist/' + file, 'utf-8')
+            })
+            console.log('FileList: \n', Object.keys(Bundles).filter(b => Bundles[b]));
+            reg = new RegExp('^/(' + fileList.join('|') + ')$')
+        } catch ({message,path}) {
+            throw(message + '\npath: ' + path)
+        }
+    }
+    const update = (() => {
+        const readyBundle = []
+        return (endSide) => {
+            readyBundle.push(endSide)
+            if (readyBundle.length < 2) return
+            readFile()
+            console.log('\nCompiled successfully..');
+            renderer = createBundleRenderer(JSON.parse(Bundles['vue-ssr-server-bundle']), {
                 runInNewContext: false,
                 template,
-                clientManifest: clientBundle['manifest']
+                clientManifest: JSON.parse(Bundles['vue-ssr-client-manifest'])
             })
             resolve && resolve(renderer)
         }
-    }
-    const readFile = (fs, file) => {
-        try {
-            return fs.readFileSync('/mem/' + file, 'utf-8')
-        } catch (e) {
-            console.log('read file err', e);
-        }
-    }
+    })()
 
     // client
     const clientCompiler = webpack(clientConfig)
     clientCompiler.outputFileSystem = mfs
     clientCompiler.watch({}, (err, stats) => {
-        console.log('clientCompiler watch', stats.toString({ colors: true }));
+        console.log(stats.toString({ colors: true }));
+        console.log("[Client] Build Successfully\n")
         if (err) throw err
         stats = stats.toJson()
         if (stats.errors.length) return
-
-        clientBundle['manifest'] = JSON.parse(readFile(mfs, 'vue-ssr-client-manifest.json'))
-        clientBundle['main'] = readFile(mfs, 'main.js')
-        clientBundle['0'] = readFile(mfs, '0.js')
-        update()
+        update('client')
     })
 
     // server
     const serverCompiler = webpack(serverConfig)
     serverCompiler.outputFileSystem = mfs
     serverCompiler.watch({}, (err, stats) => {
-        console.log('serverCompiler watch', stats.toString({ colors: true }));
+        console.log(stats.toString({ colors: true }));
+        console.log("[Server] Build Successfully\n")
         if (err) throw err
         stats = stats.toJson()
         if (stats.errors.length) return
-
-        serverBundle = JSON.parse(readFile(mfs, 'vue-ssr-server-bundle.json', true))
-        update()
+        update('server')
     })
 
 }
 
 exports.devStaticMid = async (ctx, next) => {
-    if (/^\/(0|main)\.js$/.test(ctx.path)) {
-        ctx.body = clientBundle[ctx.path.match(/^\/(0|main)\.js$/)[1]]
+    if (reg.test(ctx.path)) {
+        ctx.body = Bundles[ctx.path.match(reg)[1].replace(/\.\w+$/, "")]
     }
     else await next()
 }

@@ -22,12 +22,4 @@ const config = {
         ]
     }
 };
-
-if (!process.env.NODE_ENV) {
-    Object.assign(config, {
-        output: {
-            path: "/mem"
-        }
-    })
-}
 module.exports = config
