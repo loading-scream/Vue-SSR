@@ -17,8 +17,9 @@ app.use(async ctx => {
     } catch (error) {
         console.log(error)
     }
-})
-app.listen(4000, async () => {
+});
+
+(async () => {
     await getSsrRenderer()
-    console.log('listen in port 4000');
-})
+    app.listen(4000, () => console.log('listen in port 4000'))
+})();
